@@ -31,3 +31,13 @@
 - 新增 `src/avatar.js` 程序化双段四肢、对侧摆臂、足部抬起、空中收腿、落地缓冲和待机呼吸。
 - 调整相机，保留五关游戏流程和 WebGL/Canvas 双渲染路径；`npm test` 五关逻辑通过，桌面无 JS 异常。
 - 仍属于低多边形/几何卡通美术，不是照片级贴图或专业蒙皮动画；真实设备 FPS、猫脸细节、贴图材质和场景比例还需要下一轮视觉验收。
+
+## V0.3 — Storybook animation upgrade (2026-10-24)
+- Procedural WebGL materials: wood grain, woven fabric, plaster, metal highlights, screens and soft fur.
+- Warm directional toon shading, subtle rim light and atmosphere vignette.
+- Cat: breathing, blinking, ear twitching, tail movement and contact shadow.
+- Explorer: more expressive gait, weight shift, foot roll, scarf motion and face blink.
+- Room: animated curtain folds, daylight pools, linen seams and floating dust.
+- Keeps five levels, Chinese/Dutch, checkpoints, mobile controls and Canvas fallback.
+- `npm test` passes gameplay and visual-animation assertions; `npm run build` produces single-file Pages entry.
+- Visual/browser smoke test unavailable in this environment because the browser blocked local and file URLs; verify on deployed site on iPhone and desktop.

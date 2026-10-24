@@ -40,3 +40,9 @@ See [DEPLOYMENT.md](DEPLOYMENT.md). The repository was created **private**; GitH
 - 保持所有关卡机制不变。`npm test` 现在包含美术对象和步态数据的回归检查。
 
 **限制：** 这是几何卡通重制的第一轮，不是手工绘制/蒙皮动画的最终美术，也没有公开用户原始卧室照片。
+
+## V0.3 — Storybook Animation
+
+The first room now uses procedural wood, fabric, plaster and fur materials with soft toon lighting. The explorer has an articulated gait with weight shift, a fluttering scarf and blinking eyes; the colourpoint cat breathes, blinks, twitches its ears and swishes its tail. Curtains and sunlight also animate. See [V0.3 animation art direction](V0.3_ANIMATION_ART_DIRECTION.md).
+
+Run `npm test` and `npm run build` to regenerate the self-contained `index.html` used by GitHub Pages. No personal photos are bundled.

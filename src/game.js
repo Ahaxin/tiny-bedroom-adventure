@@ -45,12 +45,34 @@ export class Game{
  this.collect()}
  render(dt){const p=this.player,a=this.world.objects.slice(),tt=this.clock;
  p.impact=Math.max(0,(p.impact||0)-dt*5);
- // Tail swish is non-destructive: rest coordinates are stored with the mesh.
- for(const part of a){if(part.anim==='cat-tail'){
-   const phase=tt*1.7+part.tailIndex*.24;
+ // Environmental secondary animation uses rest poses; never accumulate offsets.
+ const reducedMotion=typeof window!=='undefined'&&window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+ const animationTime=reducedMotion?0:tt;
+ for(const part of a){
+  if(part.anim==='cat-tail'){
+   const phase=animationTime*1.7+part.tailIndex*.24;
    part.pos[0]=part.rest[0]+Math.sin(phase)*(.045+part.tailIndex*.045);
    part.pos[1]=part.rest[1]+Math.cos(phase)*.035;
+  }else if(part.anim==='cat-breathe'){
+   part.pos[1]=part.rest[1]+Math.sin(animationTime*1.65+part.catPhase)*.024;
+  }else if(part.anim==='cat-eye'){
+   part.pos[1]=part.rest[1]+Math.sin(animationTime*1.65+part.catPhase)*.02;
+   const blink=(animationTime%5.7)>5.46;
+   part.size[1]=blink?.018:.19;
+  }else if(part.anim==='cat-ear'){
+   part.pos[1]=part.rest[1]+Math.sin(animationTime*1.65+part.catPhase)*.022;
+   part.rotZ=Math.sin(animationTime*.82+part.catPhase)*.055;
+  }else if(part.anim==='curtain'){
+   part.pos[0]=part.rest[0]+Math.sin(animationTime*.68+part.curtainIndex*.34)*.045;
+  }
+ }
+ // A few sunlit dust motes float around the miniature explorer.
+ if(this.level===1||this.level===3||this.level===4){for(let i=0;i<22;i++){
+  const q=i*2.39996,depth=4+(i%8)*2.3;
+  const x=p.x+Math.sin(q)*6.4,y=2.0+(i%6)*.57+Math.sin(animationTime*.7+q)*.35,z=p.z-depth;
+  a.push(obj('sphere',x,y,z,.035,.035,.035,i%3?'#f8ebd2':'#fff9eb',{alpha:.35+Math.sin(animationTime+q)*.12,glow:.45}));
  }}
+ this.renderer.time=animationTime;
  a.push(...avatarObjects(p,tt));
  for(let i=0;i<14;i++){const j=i*.897+tt*.3;const x=Math.sin(i*5.31+tt*.2)*6,yv=1.7+Math.sin(j*1.47)*.9+(i%5)*.28,z=p.z-11+(i%7)*3.2;if(this.level===2||this.level===5)a.push(obj('sphere',x,yv,z,.07,.07,.07,i%2?'#fff3c8':'#ddf6f6',{alpha:.72,glow:.8}));}
  // proximity marker breathes
