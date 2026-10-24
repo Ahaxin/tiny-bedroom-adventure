@@ -1,5 +1,12 @@
-node_modules/
+# Never commit family photos, portraits, uploads, secrets or build debris
 .DS_Store
+node_modules/
+references/*.jpg
+references/*.jpeg
+references/*.png
+references/*.webp
+references/*.heic
+uploads/
 .env
 .env.*
 !*.example
