@@ -1,0 +1,2 @@
+import {Game} from './game.js';
+try{window.__bedroomGame=new Game()}catch(e){console.error(e);document.querySelector('#mainMenu').innerHTML='<div class="fatal"><h2>3D 无法启动 / 3D kon niet starten</h2><p>请用支持 WebGL 的较新版本 Chrome、Safari、Firefox 打开游戏。</p><pre></pre></div>';document.querySelector('.fatal pre').textContent=String(e.message||e)}

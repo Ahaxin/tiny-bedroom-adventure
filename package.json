@@ -1,0 +1,12 @@
+{
+  "name": "tiny-bedroom-adventure",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Tiny Bedroom Adventure — a bilingual, playable browser puzzle platformer",
+  "scripts": {
+    "start": "python3 -m http.server 8000",
+    "build": "python3 tests/build_standalone.py",
+    "test": "node tests/game.test.mjs"
+  }
+}
