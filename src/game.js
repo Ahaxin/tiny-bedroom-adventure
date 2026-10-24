@@ -1,4 +1,5 @@
 import {Renderer,obj} from './renderer.js';
+import {avatarObjects} from "./avatar.js";
 import {scene,initialFlags} from './levels.js';
 import {AudioEngine} from './audio.js';
 import {t,getLocale,setLocale} from './i18n.js';
@@ -36,16 +37,21 @@ export class Game{
  if(this.level===5){if(!f.screenEntered){if(id.startsWith('key')){let i=Number(id.slice(-1));if(f.portalUnlocked)done();else if(i===f.keySeq){f.keySeq++;changed=true;message='msg.key';sound='success';if(f.keySeq===3){set('portalUnlocked');sound='magic'}}else{f.keySeq=0;changed=true;message='wrong';sound='fail'}}else if(id==='portal'){if(f.portalUnlocked){set('screenEntered');this.player={x:0,y:1.25,z:5,vy:0,onGround:true,heading:0,step:0};message='msg.portal';sound='magic'}else locked()}}else{if(id.startsWith('mirror')){if(f.mirrorsSolved)done();else{let i=Number(id.slice(-1));f.mirrors[i]=(f.mirrors[i]+1)%3;changed=true;if(f.mirrors[0]===1&&f.mirrors[1]===2){set('mirrorsSolved');message='msg.mirror';sound='success'}}}else if(id.startsWith('lever')){if(!f.mirrorsSolved)locked();else if(f.leverSeq===3)done();else{let i=Number(id.slice(-1));if(i===f.leverSeq){f.leverSeq++;changed=true;message='msg.lever';sound='success'}else{f.leverSeq=0;changed=true;message='wrong';sound='fail'}}}else if(id==='catlight'){if(f.catHelp)done();else if(f.leverSeq===3){set('catHelp');message='msg.catlight';sound='meow'}else locked()}else if(id==='device'){if(f.catHelp&&f.scaleButtonOwned){set('deviceFixed');set('gameCompleted');message='msg.device';sound='magic';this.audio.effect(sound);this.save();this.makeScene();this.updateUI();this.say(message,3800);this.showVictory();return}else locked()}}}
  if(message)this.say(message);this.audio.effect(sound);if(changed){this.makeScene();this.save();this.updateUI()}}
  collect(){const p=this.player;for(let v of this.world.collectibles){if(!this.stars.includes(v.id)&&distance(p,v)<1.0){this.stars.push(v.id);this.audio.effect('success');this.say('sticker',1550);this.save()}}}
- move(dt){const p=this.player;let x=0,z=0;if(this.keys.has('KeyW')||this.keys.has('ArrowUp'))z-=1;if(this.keys.has('KeyS')||this.keys.has('ArrowDown'))z+=1;if(this.keys.has('KeyA')||this.keys.has('ArrowLeft'))x-=1;if(this.keys.has('KeyD')||this.keys.has('ArrowRight'))x+=1;x+=this.controls.x;z+=this.controls.z;let mag=Math.hypot(x,z);if(mag>1){x/=mag;z/=mag}let speed=this.difficulty==='relaxed'?4.5:4.7;p.x=clamp(p.x+x*speed*dt,-4.05,4.05);p.z=clamp(p.z+z*speed*dt,-29,7);p.step+=mag*dt*8;if(mag>.12)p.heading=Math.atan2(x,-z);
+ move(dt){const p=this.player;let x=0,z=0;if(this.keys.has('KeyW')||this.keys.has('ArrowUp'))z-=1;if(this.keys.has('KeyS')||this.keys.has('ArrowDown'))z+=1;if(this.keys.has('KeyA')||this.keys.has('ArrowLeft'))x-=1;if(this.keys.has('KeyD')||this.keys.has('ArrowRight'))x+=1;x+=this.controls.x;z+=this.controls.z;let mag=Math.hypot(x,z);if(mag>1){x/=mag;z/=mag}let speed=this.difficulty==='relaxed'?4.5:4.7;p.x=clamp(p.x+x*speed*dt,-4.05,4.05);p.z=clamp(p.z+z*speed*dt,-29,7);p.motion=mag;p.step+=mag*dt*9;if(mag>.12)p.heading=Math.atan2(x,-z);
  if((this.keys.has('Space')||this.controls.jump)&&p.onGround){p.vy=this.difficulty==='relaxed'?7.8:7.1;p.onGround=false;this.audio.effect('jump');this.controls.jump=false}
  const oldY=p.y;p.vy-=18.5*dt;p.y+=p.vy*dt;let floors=this.world.surfaces.filter(v=>p.x>=v.xmin+.01&&p.x<=v.xmax-.01&&p.z>=v.zmin+.01&&p.z<=v.zmax-.01);let target=floors.length?Math.max(...floors.map(v=>v.y)):-10;const autoStep=p.onGround&&target>=oldY&&target-oldY<=.52;
- if((p.vy<=0&&p.y<=target&&oldY>=target-.55)||autoStep){p.y=target;p.vy=0;p.onGround=true}else p.onGround=false;
+ if((p.vy<=0&&p.y<=target&&oldY>=target-.55)||autoStep){if(!p.onGround&&p.vy < -1)p.impact=1;p.y=target;p.vy=0;p.onGround=true}else p.onGround=false;
  if(p.y<-2){let cp=this.checkpoint();p.x=cp.x;p.z=cp.z;p.y=cp.y;p.vy=0;p.onGround=true;this.say('fail');this.audio.effect('fail')}
  this.collect()}
- render(dt){const p=this.player,a=this.world.objects.slice(),tt=this.clock;let bob=p.onGround?Math.min(.04,Math.sin(p.step*2)*.036):-.035;const y=p.y+bob;const shadow=obj('sphere',p.x,p.y+.04,p.z,.44,.035,.33,'#746f8a',{alpha:.24});
- const body=obj('sphere',p.x,y+.54,p.z,.29,.43,.23,'#e7a874',{rotY:p.heading});const head=obj('sphere',p.x,y+1.11,p.z,.30,.31,.28,'#f3c9a8',{rotY:p.heading});const hair=obj('sphere',p.x,y+1.33,p.z+.01,.33,.16,.30,'#534457');const l1=obj('sphere',p.x-.18,y+.21,p.z,.10,.24,.10,'#526e94',{rotZ:Math.sin(p.step)*.25});const l2=obj('sphere',p.x+.18,y+.21,p.z,.10,.24,.10,'#526e94',{rotZ:-Math.sin(p.step)*.25});const b1=obj('sphere',p.x-.32,y+.65,p.z,.10,.24,.10,'#e6a47d',{rotZ:Math.sin(p.step)*.18});const b2=obj('sphere',p.x+.32,y+.65,p.z,.10,.24,.10,'#e6a47d',{rotZ:-Math.sin(p.step)*.18});a.push(shadow,body,l1,l2,b1,b2,head,hair,obj('sphere',p.x-.12,y+1.12,p.z-.255,.04,.05,.025,'#3a3c4d'),obj('sphere',p.x+.12,y+1.12,p.z-.255,.04,.05,.025,'#3a3c4d'),obj('sphere',p.x,y+.98,p.z-.27,.08,.035,.01,'#d68d8e'));
- // scarf and tiny backpack
- a.push(obj('sphere',p.x,y+.76,p.z,.30,.12,.28,'#f8d98c'),obj('sphere',p.x,y+.6,p.z+.23,.18,.28,.15,'#e2b7cc'));
+ render(dt){const p=this.player,a=this.world.objects.slice(),tt=this.clock;
+ p.impact=Math.max(0,(p.impact||0)-dt*5);
+ // Tail swish is non-destructive: rest coordinates are stored with the mesh.
+ for(const part of a){if(part.anim==='cat-tail'){
+   const phase=tt*1.7+part.tailIndex*.24;
+   part.pos[0]=part.rest[0]+Math.sin(phase)*(.045+part.tailIndex*.045);
+   part.pos[1]=part.rest[1]+Math.cos(phase)*.035;
+ }}
+ a.push(...avatarObjects(p,tt));
  for(let i=0;i<14;i++){const j=i*.897+tt*.3;const x=Math.sin(i*5.31+tt*.2)*6,yv=1.7+Math.sin(j*1.47)*.9+(i%5)*.28,z=p.z-11+(i%7)*3.2;if(this.level===2||this.level===5)a.push(obj('sphere',x,yv,z,.07,.07,.07,i%2?'#fff3c8':'#ddf6f6',{alpha:.72,glow:.8}));}
  // proximity marker breathes
  const near=this.nearest();if(near){a.push(obj('sphere',near.x,near.y+1.2+Math.sin(tt*3)*.17,near.z,.24,.24,.24,'#fff3a6',{alpha:.73,glow:.8}))}

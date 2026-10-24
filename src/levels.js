@@ -13,19 +13,106 @@ function rings(a,x,y,z,c=C.gold){cyl(a,x,y,z,.58,.045,c,{glow:.35});ball(a,x,y+.
 function card(a,x,y,z,c='#ffffff'){box(a,x,y,z,.9,.06,.55,c,{rotZ:-.08});box(a,x,y+.08,z,.35,.02,.10,C.lav)}
 function pillow(a,x,y,z,c=C.cream,sx=1.8,sz=1.2){ball(a,x,y,z,sx,.38,sz,c);ball(a,x,y+.16,z,sx*.85,.23,sz*.8,c)}
 function plant(a,x,y,z){cyl(a,x,y+.55,z,.42,.44,'#d2b8a1');for(let i=0;i<6;i++){let angle=i*Math.PI/3;ball(a,x+Math.cos(angle)*.34,y+1.25+i%2*.18,z+Math.sin(angle)*.3,.24,.65,.20,i%2?'#6daba1':'#83c5ac',{rotZ:Math.cos(angle)*.6})}}
-function cat(a,x,y,z,small=false,rotate=0){let scale=small?.7:1;let g=(dx,dy,dz)=>[x+dx*scale,y+dy*scale,z+dz*scale];function b(dx,dy,dz,sx,sy,sz,c){let p=g(dx,dy,dz);ball(a,...p,sx*scale,sy*scale,sz*scale,c,{rotY:rotate})}b(0,.94,0,1.35,.93,1.65,'#fff7ed');b(0,1.63,-.72,.91,.82,.84,'#fefbf8');b(-.59,2.17,-.88,.32,.41,.27,'#d6a8a5');b(.59,2.17,-.88,.32,.41,.27,'#d6a8a5');b(-.56,2.17,-.88,.21,.30,.21,'#fff9f4');b(.56,2.17,-.88,.21,.30,.21,'#fff9f4');b(-.37,1.73,-1.41,.15,.23,.07,'#5d99ae');b(.37,1.73,-1.41,.15,.23,.07,'#5d99ae');b(-.34,1.73,-1.47,.061,.10,.04,'#25394b');b(.34,1.73,-1.47,.061,.10,.04,'#25394b');b(0,1.42,-1.52,.16,.105,.08,'#d894a5');b(-.64,.28,-1.13,.35,.3,.48,'#fff9ef');b(.64,.28,-1.13,.35,.3,.48,'#fff9ef');b(1.35,.8,1.02,.32,.32,.50,'#fff9ef');b(1.65,1.1,1.40,.28,.27,.37,'#d8b0ab')}
-function bedroom(a,l){ // unmistakable relative furniture: bed right, desk/office chair left, grey curtains at window
- box(a,0,-.52,-7.5,36,.48,44,'#caa989');for(let z=-30;z<15;z+=3.3){box(a,0,-.28,z,36,.009,.018,'#a67b64')}
- box(a,0,12,-41,37,13,.42,'#e9e6e2');box(a,-18,10,-15,.38,13,35,'#dfd5cd');
- box(a,-11.9,7.5,-37,.11,4.1,3.8,'#b9c8cf');box(a,-11.9,7.5,-37.1,.15,.12,3.8,'#f7f8fa');
- for(let i=0;i<5;i++)box(a,-12.25+i*.25,7.5,-36.7+i*.2,.20,4.35,.30,'#aaa9b3');
- box(a,7.0,1.2,-25,5.5,.7,14.6,'#f7f7f6');box(a,7,2.2,-33,5.8,1.6,.28,'#fafafb');pillow(a,5,2.35,-30,'#f6f1ed',1.5,.8);pillow(a,8.4,2.35,-30,'#fbf9f4',1.4,.9);
- box(a,7,1.8,-24.5,5.4,.14,5.5,C.pink,{rotZ:.02});
- box(a,-7.5,1.8,-31,5.2,.25,2.7,'#f7f7f7');for(let x of [-11.4,-3.7])box(a,x,.65,-31,.19,1.0,.23,'#f8f8f8');
- box(a,-8.4,2.25,-31.7,1.7,.9,.14,'#343946');box(a,-8.4,2.1,-31.7,1.5,.72,.16,'#788996');box(a,-6.5,2.07,-30.6,1.6,.05,.5,'#d4d7d8');
- box(a,-7.4,2.7,-34,4.4,.10,1.0,'#ffffff');box(a,-7.5,1,-26,1.4,.32,1.2,'#343342');cyl(a,-7.5,.35,-26,.24,.48,'#3c3846');
- for(let d of [-1,1]){box(a,-7.5+d*1.1,.06,-26,.72,.10,.11,'#31313f');box(a,-7.5,.20,-26+d*1.1,.10,.10,.72,'#343342')}
- plant(a,14,0,-29);cyl(a,15,2.8,-37,.08,2.8,'#d8c6ac');ball(a,15,5.6,-37,.68,.7,.68,'#ffe9b7',{glow:.22});
+function cat(a,x,y,z,small=false,rotate=0){
+ // Ragdoll-like colourpoint cat, inspired by the actual cat on the right-hand side of the bed.
+ const k=small?.72:1,co=Math.cos(rotate),si=Math.sin(rotate);
+ const at=(dx,dy,dz)=>[x+k*(dx*co+dz*si),y+k*dy,z+k*(dz*co-dx*si)];
+ const fluff='#f5eee2',cream='#fff9ed',point='#8b7d7b',dark='#6b6065',blue='#8bc6df';
+ function b(dx,dy,dz,sx,sy,sz,color,extra={}){a.push(O('sphere',...at(dx,dy,dz),sx*k,sy*k,sz*k,color,{...extra}));}
+ function c(dx,dy,dz,sx,sy,sz,color,extra={}){a.push(O('cone',...at(dx,dy,dz),sx*k,sy*k,sz*k,color,{...extra}));}
+ // Lying fluffy body and fur tufts, with paws tucked beneath chest.
+ b(0,.69,.34,1.35,.70,1.48,fluff);
+ b(0,.43,-.45,1.08,.38,.85,cream);
+ for(let i=0;i<11;i++){let ang=i*2*Math.PI/11;b(Math.cos(ang)*1.02,.68+Math.sin(i*2)*.1,.32+Math.sin(ang)*1.02,.34,.35,.42,i%2?fluff:cream);}
+ for(let side of [-1,1]){b(side*.65,.27,-.94,.39,.25,.58,point);b(side*.65,.27,-1.31,.34,.20,.25,'#9c8d88');}
+ // Thick tail curling up to the right, distinct darker tip.
+ for(let i=0;i<5;i++){const pos=at(1.18+i*.17,.73+i*.17,1.12+i*.15);a.push(O('sphere',...pos,(.39-i*.025)*k,(.38-i*.02)*k,(.44-i*.03)*k,i>2?point:fluff,{anim:'cat-tail',tailIndex:i,rest:pos.slice()}));}
+ // Broad cheeks, facial colourpoint mask, bright blue eyes.
+ b(0,1.30,-.82,.90,.76,.82,cream);
+ b(0,1.25,-1.30,.70,.56,.40,point);
+ b(-.54,1.06,-1.27,.38,.37,.34,fluff);b(.54,1.06,-1.27,.38,.37,.34,fluff);
+ for(let side of [-1,1]){
+   c(side*.59,1.94,-.91,.34,.47,.29,point,{rotZ:-side*.16});
+   c(side*.59,2.02,-1.08,.19,.27,.11,'#d8b6b5',{rotZ:-side*.16});
+   b(side*.31,1.44,-1.63,.22,.24,.10,dark);
+   b(side*.31,1.44,-1.72,.165,.19,.065,blue,{glow:.15});
+   b(side*.31,1.44,-1.78,.065,.13,.035,'#283c4d');
+   b(side*.27,1.53,-1.81,.042,.045,.02,'#ffffff',{glow:.3});
+   // whiskers fan outward from muzzle
+   for(let w=0;w<3;w++)b(side*(.52+w*.16),1.06+(w-1)*.08,-1.57,.17,.018,.018,'#eee9e5',{rotZ:side*(w-1)*.18});
+ }
+ b(0,1.10,-1.68,.18,.11,.09,'#d5a2a7');b(0,.99,-1.67,.075,.07,.025,'#695c62');
+ // Small ear tufts and mane around cheeks.
+ for(let side of [-1,1])for(let j=0;j<3;j++)b(side*(.74+j*.12),1.05+j*.12,-.98,.22,.25,.27,fluff);
+}
+function bedroom(a,l){
+ // Hand-modelled stylised reconstruction: desk and curtain LEFT, white bed RIGHT.
+ const wall='#f0efec',wood='#b78d68',sheet='#f1eee7',white='#f9f9f6',charcoal='#292b32';
+ box(a,0,-.63,-13,36,.6,55,wood);
+ for(let i=0;i<22;i++){let x=-17+i*1.58;box(a,x,-.32,-13,.018,.015,54,i%3?'#987457':'#d2a67b');}
+ // Avoid long cross-floor seams: they bleed through platforms in Canvas fallback.
+ for(let i=0;i<15;i++){let z=-38+i*3.2;box(a,-12,-.315,z,4.6,.012,.015,'#a5836d');box(a,12,-.315,z,4.6,.012,.015,'#a5836d');}
+ box(a,0,9.0,-39.5,36,12.5,.3,wall);
+ box(a,-17.5,8,-18,.28,12,44,'#e6e4e1');
+ box(a,17.5,8,-18,.28,12,44,'#ebe9e6');
+ box(a,0,3.6,-39.2,35,.065,.1,'#ffffff');
+ // Window, grey full-height curtain with individual pleats and bright slit.
+ box(a,-15.8,6.0,-30.0,.1,5.9,5.7,'#c8d6dd');
+ box(a,-15.7,6.0,-29.6,.13,5.7,.35,'#fbfcf7',{glow:.18});
+ for(let i=0;i<13;i++){let z=-36.8+i*.75;box(a,-15.0+(i%3)*.10,6.0,z,.23,5.8,.43,i%2?'#92949e':'#a6a7b1');}
+ box(a,-15.15,11.95,-32,.24,.08,10.2,'#777985');
+ box(a,-16.2,1.6,-30,.34,.6,10.3,'#f6f5f1');
+ // White desk on left; double display (black monitor + open laptop).
+ box(a,-8.8,2.05,-31.0,6.0,.20,3.2,white);
+ box(a,-8.8,1.06,-32.35,5.8,.91,.14,'#eeecea');
+ for(let xx of [-14.2,-3.4])box(a,xx,.95,-31,.18,.98,2.9,'#f4f2f0');
+ box(a,-8.8,2.22,-31,5.85,.035,3.0,'#ffffff');
+ // Monitor on stand and its slightly reflective dark screen.
+ box(a,-6.0,4.2,-32.1,2.6,1.48,.13,'#252b34');
+ box(a,-6.0,4.2,-31.99,2.38,1.27,.03,'#111922');
+ box(a,-6.6,4.68,-31.96,.45,.018,.012,'#303d49',{alpha:.5});
+ box(a,-6.0,2.85,-32.15,.10,.27,.10,'#2a2c32');
+ box(a,-6.0,2.58,-32.15,.8,.05,.45,'#37383d');
+ // Laptop, open at a slant, keyboard and colourful keycaps.
+ box(a,-10.2,2.23,-30.15,1.35,.06,.87,'#393d46');
+ box(a,-10.2,3.30,-30.95,1.35,1.0,.07,'#2b3039',{rotX:-.10});
+ box(a,-10.2,3.30,-30.85,1.23,.87,.025,'#0d1620',{rotX:-.10});
+ for(let i=0;i<6;i++)for(let j=0;j<3;j++)box(a,-10.72+i*.20,2.29,-30.47+j*.18,.078,.012,.045,(i+j)%4===0?'#a87991':'#727985');
+ // Papers, notebooks, pens and mug on desk.
+ for(let i=0;i<4;i++)box(a,-5.0+i*.16,2.29+i*.03,-29.8,.62,.025,.41,i%2?'#dcd6d4':'#ffffff',{rotY:.13*i});
+ cyl(a,-12.2,2.43,-30.2,.26,.25,'#f7f3f0');
+ for(let i=0;i<5;i++)box(a,-12.4+i*.15,2.31,-32.0,.07,.05,.35,['#e6ad9f','#9caec8','#e7c9a0'][i%3]);
+ // Upper white floating shelf, books and storage.
+ box(a,-9.1,7.25,-35.8,5.5,.12,1.15,'#ffffff');
+ for(let i=0;i<10;i++){let x=-13.5+i*.62;box(a,x,7.63,-35.9,.22,.35+(i%4)*.10,.56,['#ba8f92','#e7c8c2','#b0b4bb','#d9c5b2'][i%4]);}
+ box(a,-5.3,7.65,-35.7,1.1,.40,.72,'#403a39');
+ // Mesh-backed swivel chair, 5-spoke base, wheels, armrests.
+ cyl(a,-10.8,.6,-24.5,.15,.70,'#292b32');
+ for(let i=0;i<5;i++){let t=i*2*Math.PI/5;box(a,-10.8+Math.sin(t)*.82,.18,-24.5+Math.cos(t)*.82,.11,.09,.84,charcoal,{rotY:t});ball(a,-10.8+Math.sin(t)*1.5,.15,-24.5+Math.cos(t)*1.5,.18,.18,.18,'#1d2026');}
+ ball(a,-10.8,1.52,-24.5,1.55,.27,1.15,'#272a31');
+ ball(a,-10.8,3.12,-25.4,1.36,1.55,.28,'#25272d');
+ ball(a,-10.8,3.15,-25.14,1.08,1.31,.08,'#454b52');
+ for(let side of [-1,1]){box(a,-10.8+side*1.4,2.15,-24.4,.14,.08,.8,'#25272d');box(a,-10.8+side*1.4,1.75,-24.5,.10,.42,.12,'#2c3037');}
+ // White headboard and large low bed, aligned on RIGHT as in photo.
+ box(a,7.8,2.4,-35.5,7.65,1.6,.25,'#fafaf8');
+ box(a,7.8,1.0,-28.3,7.55,.85,8.8,'#ece8e1');
+ box(a,7.8,1.55,-28.3,7.58,.25,8.65,sheet);
+ box(a,7.8,1.70,-28.3,7.3,.12,8.35,'#f6f3ed');
+ for(let i=0;i<4;i++)box(a,4.8+i*2,1.78,-28.3,.02,.012,8.1,'#e1ddd5');
+ // Pillows against headboard and rumpled white/blue duvet in foreground.
+ pillow(a,5.2,1.94,-33.5,'#f7f5ee',1.48,1.10);
+ pillow(a,8.0,1.95,-33.8,'#f8f7f1',1.50,1.12);
+ pillow(a,10.6,1.95,-33.5,'#f8f5ed',1.45,1.15);
+ for(let i=0;i<7;i++){let x=4.9+i*.8,z=-27.5+Math.sin(i*1.7)*1.0;ball(a,x,2.02+Math.sin(i*.8)*.19,z,.75,.39,1.52,i%2?'#e2e5e9':'#f0f1f1',{rotZ:Math.sin(i)*.13});}
+ // The signature pink blanket at right foot of bed.
+ for(let i=0;i<5;i++)ball(a,9.2+i*.55,2.0+Math.sin(i*1.6)*.17,-26.0+i*.45,.85,.28,1.0,i%2?'#dca6b0':'#e8b5bf',{rotZ:.15*i});
+ // Black upright floor lamp at far right.
+ cyl(a,15.6,3.0,-35.7,.075,3.0,'#242528');
+ cyl(a,15.6,.15,-35.7,.57,.08,'#26272a');
+ cyl(a,15.6,6.3,-35.7,.50,.75,'#e4ded2',{alpha:.75});
+ cyl(a,15.6,5.5,-35.7,.14,.18,'#302b29');
+ // Gentle rug edge and photo-like low sunlight.
+ box(a,-1.2,-.27,-23.0,2.1,.025,6.1,'#d5b29a',{alpha:.32});
 }
 function caveBackdrop(a){box(a,0,-1,-8,28,.85,46,'#4b536f');box(a,0,9,-39,27,8,.5,'#585678');for(let j=0;j<26;j++){let x=Math.sin(j*31.7)*8,z=-32+(j%13)*3;ball(a,x,.4+(j%4)*2,z,.15,.15,.15,j%3?'#b8b5ef':'#ffe5b2',{glow:.7})}for(let k=0;k<9;k++){let x=k%2===0?-5.2:5.2,z=4-k*3.6;ball(a,x,3.1,z,1.4,3.4,1.8,'#8885a5',{alpha:.74});ball(a,x*1.08,4.3,z,.6,1.0,.9,'#a1a0c5',{alpha:.48})}}
 function digitalBackdrop(a){box(a,0,-1,-6,32,.7,45,'#344a68');box(a,0,9,-39,27,8,.4,'#29395b');for(let i=0;i<23;i++){let x=Math.sin(i*77)*9,y=.4+(i%4)*1.25,z=-26+(i%12)*2.9;box(a,x,y,z,.4,.18,.34,i%2?'#8f94de':'#62c8cc',{rotY:i*.3,glow:.18})}for(let i=0;i<10;i++){let x=i%2?-5:5,z=6-i*4.1;box(a,x,2.7,z,.3,1.8,.06,'#89cadd',{alpha:.45,rotZ:i*.12})}}
